@@ -2,7 +2,7 @@
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 combinedArray := {}
 count = 0
-send = True
+send := true
 ; Build hotkey list from file macroList.txt
 Loop, Read, macroList.txt
 {
@@ -26,18 +26,18 @@ Loop
 				{
 					if (key == "{")
 					{
-						send = False
+						send := false
 						;button = %key%
 						button =
 					}
 					else if (key == "}")
 					{
-						send = True
+						send := true
 						key = %button%
 					}
 					else
 					{
-						if (send == "True")
+						if (send)
 						{
 							key = %key%
 						}
@@ -51,7 +51,7 @@ Loop
 				{
 					key = Space
 				}
-				if (send == "True")
+				if (send)
 				{
 					SendInput {%key%}
 				}
