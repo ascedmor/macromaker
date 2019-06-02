@@ -1,6 +1,7 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 SendLevel = 100
+global nestDepth = 0, maxNestDepth = 5
 global combinedArray := {}
 
 ; Build macro list from file macroList.txt
@@ -21,7 +22,7 @@ Loop
 
 performSequence(sequence)
 {
-	global combinedArray
+	global nestDepth, maxNestDepth, combinedArray
 	send := true
 	button := ""
 	Loop, parse, sequence
@@ -64,8 +65,16 @@ performSequence(sequence)
 			}
 			else if (combinedArray.HasKey(button))
 			{
-				nestedSequence := ObjRawGet(combinedArray, button)
-				performSequence(nestedSequence)
+				if (nestDepth < maxNestDepth)
+				{
+					nestDepth += 1
+					nestedSequence := ObjRawGet(combinedArray, button)
+					performSequence(nestedSequence)
+				}
+				else
+				{
+					nestDepth = 0
+				}
 			}
 			else
 			{
