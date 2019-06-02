@@ -2,17 +2,11 @@
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 SendLevel = 100
 global combinedArray := {}
-count = 0
-; Build hotkey list from file macroList.txt
 
-Loop, Read, macroList.txt
-	{
-		array := StrSplit(A_LoopReadLine, ":")
-		combinedArray[array[1]] := array[2]
-		count += 1
-	}
+; Build macro list from file macroList.txt
+combinedArray := loadFile("macroList.txt")
+MsgBox % "Found " combinedArray.Count() " hotkey(s)"
 
-MsgBox % "Found "count " hotkey(s)"
 ; enter main loop
 Loop
 {
@@ -81,4 +75,15 @@ performSequence(sequence)
 		}
 		
 	}
+}
+
+loadFile(fileName)
+{
+	combinedArray := {}
+	Loop, Read, %fileName%
+	{
+		array := StrSplit(A_LoopReadLine, ":")
+		combinedArray[array[1]] := array[2]
+	}
+	return combinedArray
 }
