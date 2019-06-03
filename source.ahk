@@ -1,6 +1,6 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
-global maxRecDepth = 1
+global maxRecDepth = 5
 global combinedArray := {}
 
 ; Build macro list from file macroList.txt
@@ -27,6 +27,10 @@ performSequence(sequence, recDepth)
 	button := ""
 	Loop, parse, sequence
 	{
+		if (A_LoopField == "{")
+		{
+			
+		}
 		key = %A_LoopField%
 		if %key%
 		{
