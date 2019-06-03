@@ -71,7 +71,6 @@ performSequence(sequence, recDepth)
 				if (recDepth < maxRecDepth)
 				{
 					recDepth += 1
-					MsgBox %recDepth%
 					nestedSequence := ObjRawGet(combinedArray, button)
 					performSequence(nestedSequence, recDepth)
 				}
