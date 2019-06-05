@@ -25,48 +25,21 @@ performSequence(sequence, recDepth)
 	global maxRecDepth, combinedArray
 	send := true
 	button := ""
+	construct := false
 	Loop, parse, sequence
 	{
-		if (A_LoopField == "{")
+		if (A_LoopField == "{")								;begin constructing button name
 		{
-			
-		}
-		key = %A_LoopField%
-		if %key%
-		{
-			if (key == "{")
+			if not (construct)
 			{
-				send := false
-				;button = %key%
+				construct := true
 				button := ""
 			}
-			else if (key == "}")
-			{
-				send := true
-			}
-			else
-			{
-				if (send)
-				{
-					key = %key%
-				}
-				else
-				{
-					button = %button%%key%	
-				}
-			}
 		}
-		else
+		else if (A_LoopField == "}")							;stop constructing button name
 		{
-			key = Space
-		}
-		if (send)
-		{
-			if (button = "")
-			{
-				SendInput {%key%}
-			}
-			else if (combinedArray.HasKey(button))
+			construct := false
+			if (combinedArray.HasKey(button))						;perform nested macro
 			{
 				if (recDepth < maxRecDepth)
 				{
@@ -76,12 +49,31 @@ performSequence(sequence, recDepth)
 				}
 				button := ""
 			}
-			else
+			else										;send as button
 			{
+				MsgBox "Sending button: " %button%
 				SendInput {%button%}
 				button := ""
 			}
 		}
+		else if (construct)								;add letter to button name
+		{
+			button = %button%%A_LoopField%
+		}
+		else										;send key
+		{
+			key = %A_LoopField%
+
+			if (key = "")								;change blank keys to spaces
+			{
+				key = Space
+			}
+
+			SendInput {%key%}
+			key := ""
+
+		}
+
 		
 	}
 }
@@ -89,10 +81,10 @@ performSequence(sequence, recDepth)
 loadFile(fileName)
 {
 	combinedArray := {}
-	Loop, Read, %fileName%
+	Loop, Read, %fileName%						;read file line by line
 	{
-		array := StrSplit(A_LoopReadLine, ":")
-		combinedArray[array[1]] := array[2]
+		array := StrSplit(A_LoopReadLine, ":")			;split using : as delimiter
+		combinedArray[array[1]] := array[2]			;add array element with named key
 	}
 	return combinedArray
 }
