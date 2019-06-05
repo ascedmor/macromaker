@@ -51,7 +51,6 @@ performSequence(sequence, recDepth)
 			}
 			else										;send as button
 			{
-				MsgBox "Sending button: " %button%
 				SendInput {%button%}
 				button := ""
 			}
