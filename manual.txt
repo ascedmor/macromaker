@@ -30,7 +30,7 @@ Will result in the enter key being pressed 4 times when the macro is triggered a
 
 	RCtrl:{Enter down}
 
-Will result in the enter key being held until a subsequence {Enter up} command is sent
+Will result in the enter key being held until a subsequent {Enter up} command is sent
 
 Macros can be nested and even call themselves, however a macro is only allowed a recursion depth of 5, this is to prevent infinite recursion from crashing the script during execution.
 
