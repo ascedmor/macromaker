@@ -51,13 +51,27 @@ performSequence(sequence, recDepth)
 			}
 			else										;send as button
 			{
-				SendInput {%button%}
+				Send {%button%}
 				button := ""
 			}
 		}
 		else if (construct)								;add letter to button name
 		{
-			button = %button%%A_LoopField%
+
+			if (insSpace)
+			{
+				button = %button% %A_LoopField%
+				insSpace := false
+			}
+			else
+			{
+				button = %button%%A_LoopField%
+			}
+
+			if (A_LoopField = " ")								;prepare to insert a space before the next character
+			{
+				insSpace := true
+			}
 		}
 		else										;send key
 		{
@@ -68,7 +82,7 @@ performSequence(sequence, recDepth)
 				key = Space
 			}
 
-			SendInput {%key%}
+			Send {%key%}
 			key := ""
 
 		}
