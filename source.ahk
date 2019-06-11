@@ -33,8 +33,15 @@ performSequence(sequence, recDepth)
 	send := true
 	button := ""
 	construct := false
+	waitTime = 0
+	startTime = A_TickCount
 	Loop, parse, sequence
 	{
+		if (waitTime > 0)
+		{
+			Sleep, waitTime
+			waitTime = 0
+		}
 		if (A_LoopField == "{")								;begin constructing button name
 		{
 			if not (construct)
@@ -64,20 +71,30 @@ performSequence(sequence, recDepth)
 		}
 		else if (construct)								;add letter to button name
 		{
-
-			if (insSpace)
+			if (A_LoopField = "#")
 			{
-				button = %button% %A_LoopField%
-				insSpace := false
+				readWait = true
+			}
+			else if (readWait)
+			{
+				waitTime := A_LoopField * 1000
 			}
 			else
 			{
-				button = %button%%A_LoopField%
-			}
+				if (insSpace)
+				{
+					button = %button% %A_LoopField%
+					insSpace := false
+				}
+				else
+				{
+					button = %button%%A_LoopField%
+				}
 
-			if (A_LoopField = " ")								;prepare to insert a space before the next character
-			{
-				insSpace := true
+				if (A_LoopField = " ")								;prepare to insert a space before the next character
+				{
+					insSpace := true
+				}
 			}
 		}
 		else										;send key
