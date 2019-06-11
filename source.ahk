@@ -14,20 +14,13 @@ MsgBox % "Found " combinedArray.Count() " hotkey(s)"
 ; enter main loop
 Loop
 {
-	for hotkey, macro in combinedArray
-	{
-		if (GetKeyState(hotkey))
-		{
-			;performSequence(macro, 0)
-			recDepth = 0
-		}
-	}
+
 }
 
 ;Handle threaded hotkeys
 
 hotkeyTrigger:
-	hotkey = A_ThisHotkey
+	hotkey = %A_ThisHotkey%
 	macro := ObjRawGet(combinedArray, hotkey)
 	performSequence(macro, 0)
 return
