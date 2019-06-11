@@ -1,12 +1,13 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
-#MaxThreads 6
-#MaxThreadsPerHotkey 5
-global maxRecDepth = 5
+global maxRecDepth, mThreads, mThreadsPerKey, listName
+loadSettings()
+#MaxThreads %mThreads%
+#MaxThreadsPerHotkey %mThreadsPerKey%
 global combinedArray := {}
 
 ; Build macro list from file macroList.txt
-combinedArray := loadFile("macroList.txt")
+combinedArray := loadFile(listName)
 MsgBox % "Found " combinedArray.Count() " hotkey(s)"
 
 
@@ -133,11 +134,28 @@ loadFile(fileName)
 	combinedArray := {}
 	Loop, Read, %fileName%						;read file line by line
 	{
-		array := StrSplit(A_LoopReadLine, ":")			;split using : as delimiter
-		combinedArray[array[1]] := array[2]			;add array element with named key
-		keyName := array[1]
-		Try Hotkey, %keyName%, hotkeyTrigger
+		firstChar := ""
+		StringLeft, firstChar, A_LoopReadLine, 1
+		if not (firstChar = ";")
+		{		
+			array := StrSplit(A_LoopReadLine, ":")			;split using : as delimiter
+			combinedArray[array[1]] := array[2]			;add array element with named key
+			keyName := array[1]
+			Try Hotkey, %keyName%, hotkeyTrigger
+		}
 		
 	}
 	return combinedArray
+}
+
+loadSettings()
+{
+	global maxRecDepth, mThreads, mThreadsPerKey, listName
+
+	settings := loadFile("settings.txt")
+
+	maxRecDepth := ObjRawGet(settings, "MaxRecursionDepth")
+	mThreads := ObjRawGet(settings, "MaxThreads")
+	mThreadsPerKey := ObjRawGet(settings, "MaxThreadsPerKey")
+	listName := ObjRawGet(settings, "listName")
 }

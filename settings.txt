@@ -1,0 +1,13 @@
+;this file contains all the customisable settings, simply change the value to the right of the ":". Order doesnt matter, though it is important to have an entry for each setting
+
+;the maximum depth to which a macro can call itself. Values too high will cause the script to crash
+MaxRecursionDepth:5
+
+;the global maximum amount of threads, including the main thread
+MaxThreads:6
+
+;the maximum amount of threads for a single hotkey
+MaxThreadsPerHotkey:5
+
+;the name of the file you want to load your macros from
+ListName:macroList.txt
