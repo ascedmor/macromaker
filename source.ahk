@@ -1,5 +1,7 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+#MaxThreads 6
+#MaxThreadsPerHotkey 5
 global maxRecDepth = 5
 global combinedArray := {}
 
@@ -42,6 +44,7 @@ performSequence(sequence, recDepth)
 			Sleep, waitTime
 			waitTime = 0
 		}
+
 		if (A_LoopField == "{")								;begin constructing button name
 		{
 			if not (construct)
@@ -71,13 +74,23 @@ performSequence(sequence, recDepth)
 		}
 		else if (construct)								;add letter to button name
 		{
+			
 			if (A_LoopField = "#")
 			{
-				readWait = true
+				if (readWait)
+				{
+					readWait = false
+					waitTime := wait * 10
+				}
+				else
+				{
+					readWait = true
+					wait := ""
+				}		
 			}
 			else if (readWait)
 			{
-				waitTime := A_LoopField * 1000
+				wait = %wait%%A_LoopField%
 			}
 			else
 			{
