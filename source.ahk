@@ -7,6 +7,10 @@ global combinedArray := {}
 combinedArray := loadFile("macroList.txt")
 MsgBox % "Found " combinedArray.Count() " hotkey(s)"
 
+
+
+
+
 ; enter main loop
 Loop
 {
@@ -14,11 +18,21 @@ Loop
 	{
 		if (GetKeyState(hotkey))
 		{
-			performSequence(macro, 0)
+			;performSequence(macro, 0)
 			recDepth = 0
 		}
 	}
 }
+
+;Handle threaded hotkeys
+
+hotkeyTrigger:
+	hotkey = A_ThisHotkey
+	macro := ObjRawGet(combinedArray, hotkey)
+	performSequence(macro, 0)
+return
+
+
 
 performSequence(sequence, recDepth)
 {
@@ -98,6 +112,9 @@ loadFile(fileName)
 	{
 		array := StrSplit(A_LoopReadLine, ":")			;split using : as delimiter
 		combinedArray[array[1]] := array[2]			;add array element with named key
+		keyName := array[1]
+		Try Hotkey, %keyName%, hotkeyTrigger
+		
 	}
 	return combinedArray
 }
