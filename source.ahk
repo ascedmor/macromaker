@@ -1,5 +1,7 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+#MaxThreads 6
+#MaxThreadsPerHotkey 5
 global maxRecDepth = 5
 global combinedArray := {}
 
@@ -7,18 +9,25 @@ global combinedArray := {}
 combinedArray := loadFile("macroList.txt")
 MsgBox % "Found " combinedArray.Count() " hotkey(s)"
 
+
+
+
+
 ; enter main loop
 Loop
 {
-	for hotkey, macro in combinedArray
-	{
-		if (GetKeyState(hotkey))
-		{
-			performSequence(macro, 0)
-			recDepth = 0
-		}
-	}
+
 }
+
+;Handle threaded hotkeys
+
+hotkeyTrigger:
+	hotkey = %A_ThisHotkey%
+	macro := ObjRawGet(combinedArray, hotkey)
+	performSequence(macro, 0)
+return
+
+
 
 performSequence(sequence, recDepth)
 {
@@ -26,8 +35,16 @@ performSequence(sequence, recDepth)
 	send := true
 	button := ""
 	construct := false
+	waitTime = 0
+	startTime = A_TickCount
 	Loop, parse, sequence
 	{
+		if (waitTime > 0)
+		{
+			Sleep, waitTime
+			waitTime = 0
+		}
+
 		if (A_LoopField == "{")								;begin constructing button name
 		{
 			if not (construct)
@@ -57,20 +74,40 @@ performSequence(sequence, recDepth)
 		}
 		else if (construct)								;add letter to button name
 		{
-
-			if (insSpace)
+			
+			if (A_LoopField = "#")
 			{
-				button = %button% %A_LoopField%
-				insSpace := false
+				if (readWait)
+				{
+					readWait = false
+					waitTime := wait * 10
+				}
+				else
+				{
+					readWait = true
+					wait := ""
+				}		
+			}
+			else if (readWait)
+			{
+				wait = %wait%%A_LoopField%
 			}
 			else
 			{
-				button = %button%%A_LoopField%
-			}
+				if (insSpace)
+				{
+					button = %button% %A_LoopField%
+					insSpace := false
+				}
+				else
+				{
+					button = %button%%A_LoopField%
+				}
 
-			if (A_LoopField = " ")								;prepare to insert a space before the next character
-			{
-				insSpace := true
+				if (A_LoopField = " ")								;prepare to insert a space before the next character
+				{
+					insSpace := true
+				}
 			}
 		}
 		else										;send key
@@ -98,6 +135,9 @@ loadFile(fileName)
 	{
 		array := StrSplit(A_LoopReadLine, ":")			;split using : as delimiter
 		combinedArray[array[1]] := array[2]			;add array element with named key
+		keyName := array[1]
+		Try Hotkey, %keyName%, hotkeyTrigger
+		
 	}
 	return combinedArray
 }
