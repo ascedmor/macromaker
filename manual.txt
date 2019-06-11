@@ -18,7 +18,7 @@ You can place a custom tag here which can be called in another macro i.e
 	customName:print some text
 	RCtrl:{customName}
 
-Pressing RCtrl will trigger result in the customName macro being executed
+Pressing RCtrl will result in the customName macro being executed
 
 Macro Sequence is the actual key sequence of the macro. This can be any number, letter, special character or special key. Special keys are the only input that requires special formatting and should be encapsulated in braces (i.e {RCtrl}).
 
@@ -31,6 +31,15 @@ Will result in the enter key being pressed 4 times when the macro is triggered a
 	RCtrl:{Enter down}
 
 Will result in the enter key being held until a subsequent {Enter up} command is sent
+
+Wait times allow you fine control over the timing of sequence execution. Wait times should be encapsulated in curly braces and start and finish with a # symbol and in multiples of 10ms, i.e
+
+	count:1,{#100#} 2,{#100#} 3
+
+When triggered, this macro will print "1, 2, 3", waiting for 1 second between each number.
+
+Pressing a hotkey results in a new thread being created to handle the macro, with a global maximum of 6 threads (including the main thread) and a maximum of 5 threads per hotkey. This means that if you press a hotkey multiple times, or multiple different hotkeys in quick succession, it will create a new thread for each subsequent press.
+
 
 Macros can be nested and even call themselves, however a macro is only allowed a recursion depth of 5, this is to prevent infinite recursion from crashing the script during execution.
 
