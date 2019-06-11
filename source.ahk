@@ -1,15 +1,15 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
-global maxRecDepth, mThreads, mThreadsPerKey, listName
-loadSettings()
-#MaxThreads %mThreads%
-#MaxThreadsPerHotkey %mThreadsPerKey%
-global combinedArray := {}
+global maxRecDepth, listName
 
+#MaxThreads 20
+#MaxThreadsPerHotkey 5
+
+loadSettings()
+global combinedArray := {}
 ; Build macro list from file macroList.txt
 combinedArray := loadFile(listName)
 MsgBox % "Found " combinedArray.Count() " hotkey(s)"
-
 
 
 
@@ -23,6 +23,7 @@ Loop
 ;Handle threaded hotkeys
 
 hotkeyTrigger:
+
 	hotkey = %A_ThisHotkey%
 	macro := ObjRawGet(combinedArray, hotkey)
 	performSequence(macro, 0)
@@ -155,7 +156,5 @@ loadSettings()
 	settings := loadFile("settings.txt")
 
 	maxRecDepth := ObjRawGet(settings, "MaxRecursionDepth")
-	mThreads := ObjRawGet(settings, "MaxThreads")
-	mThreadsPerKey := ObjRawGet(settings, "MaxThreadsPerKey")
 	listName := ObjRawGet(settings, "listName")
 }
