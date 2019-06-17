@@ -40,7 +40,6 @@ performSequence(sequence, recDepth)
 	waitTime = 0
 	Loop, parse, sequence
 	{
-
 		if (A_LoopField == "{")								;begin constructing button name
 		{
 			if not (construct)
@@ -81,12 +80,12 @@ performSequence(sequence, recDepth)
 			{
 				if (readWait)
 				{
-					readWait = false
+					readWait := false
 					waitTime := wait * 10
 				}
 				else
 				{
-					readWait = true
+					readWait := true
 					wait := ""
 				}		
 			}
