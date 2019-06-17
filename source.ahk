@@ -1,16 +1,14 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
-global maxRecDepth, listName
+global maxRecDepth, listName, logFile
 
 #MaxThreads 20
 #MaxThreadsPerHotkey 5
-
 loadSettings()
 global combinedArray := {}
 ; Build macro list from file
 combinedArray := loadFile(listName)
 MsgBox % "Found " combinedArray.Count() " hotkey(s)"
-
 
 
 
@@ -143,7 +141,14 @@ loadFile(fileName)
 			array := StrSplit(A_LoopReadLine, ":")			;split using : as delimiter
 			combinedArray[array[1]] := array[2]			;add array element with named key
 			keyName := array[1]
-			Try Hotkey, %keyName%, hotkeyTrigger
+			try 
+			{ 
+				Hotkey, %keyName%, hotkeyTrigger 
+			} 
+			catch e 
+			{ 
+				log(e) 
+			}
 		}
 		
 	}
@@ -152,10 +157,18 @@ loadFile(fileName)
 
 loadSettings()
 {
-	global maxRecDepth, mThreads, mThreadsPerKey, listName
-
+	global maxRecDepth, listName, logFile
+	OnError("log")
 	settings := loadFile("settings.txt")
 
 	maxRecDepth := ObjRawGet(settings, "MaxRecursionDepth")
 	listName := ObjRawGet(settings, "listName")
+	logFile := ObjRawGet(settings, "logFile")
+}
+
+log(message)
+{
+	FormatTime, time, A_Now, d/M HH:mm:ss -
+	FileAppend, %time% %message% `n, %logFile%
+	return true
 }
