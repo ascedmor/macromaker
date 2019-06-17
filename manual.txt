@@ -1,51 +1,66 @@
-Macro Maker by Braeden Wilson
+1. Creating A Macro
 
-This program allows the user to create an arbitrary amount of custom macros, using normal keys (a-z 0-9 etc) as well as special keys (Enter, space, Control etc).
+	1.1 Storage
+	By default Macros are stored in macroList.txt and are loaded into the programs memory during initialisation, meaning that a restart will need to be performed 		to load any changes.
+	
+	You can easily change the name of the file to be loaded in settings.txt, allowing multiple separate macro lists to be kept handy i.e separate lists for 	different games/tasks
 
+	1.2 Structure
+	A macro is made up of a hotkey and a key sequence, separated by a ':' (colon). An example is provided below:
 
-Creating a Macro
+		RCtrl:print some text
 
-Macros are stored in macroList.txt and are loaded into memory when the program starts, meaning the program will need to be restarted when you make changes to the file.
+	The above macro will perform the key sequence "print some text" when the right control key is pressed; this is the most basic form a macro can take.
 
-This is the structure of a macro:
+	Key sequences can also perform special key inputs by encapsulating the name of the special key in "{}" (braces). An example is provided below:
 
-	hotkey:macro sequence
+		RCtrl:{Shift down} print some text {Shift up}
 
-Hotkey is the key that will trigger the macro. This can be any key on the keyboard; use https://www.autohotkey.com/docs/commands/Send.htm for a list of possible hotkeys.
+	The above macro will begin holding the shift key before typing the text "print some text" and then finally release the shift key.
 
-You can place a custom tag here which can be called in another macro i.e
+	Key sequences can also contain delays, encapsulated in hash's between braces, "{##}". An example is provided below:
 
-	customName:print some text
-	RCtrl:{customName}
+		RCtrl:{Shift down}{#500#}{Shift up}
 
-Pressing RCtrl will result in the customName macro being executed
+	The above macro will hold the shift key down for 500*10ms, or 5 seconds. It could also be written as:
 
-Macro Sequence is the actual key sequence of the macro. This can be any number, letter, special character or special key. Special keys are the only input that requires special formatting and should be encapsulated in braces (i.e {RCtrl}).
+		RCtrl:{Shift down #500#}{Shift up}
 
-Extended logic for button names in sequences is allowed i.e 
+	Depending on your preference/use case.
 
-	RCtrl:{Enter 4}
+	1.2.1 Advanced Structure
+	Macros can also be created using symbols to describe special keys, which allows the use of combinations for your hotkey. An example is provided below:
 
-Will result in the enter key being pressed 4 times when the macro is triggered and
+		>^q:print some text
 
-	RCtrl:{Enter down}
+	This macro will be triggered when the right (>) control key (^) is pressed along with the q key. A list of symbols can be found at the link provided at the end 	of this document
 
-Will result in the enter key being held until a subsequent {Enter up} command is sent
+	Hotkeys can also be arbitrary names, that can then be included as part of another macros key sequence. An example is provided below:
 
-Wait times allow you fine control over the timing of sequence execution. Wait times should be encapsulated in curly braces and start and finish with a # symbol and in multiples of 10ms, i.e
+		autoShoot:{LButton down #500#}{LButton up}
+		RCtrl:{autoShoot}
 
-	count:1,{#100#} 2,{#100#} 3
+	When you press right control, it will trigger the autoShoot macro, resulting in left click being held for 5 seconds.
 
-When triggered, this macro will print "1, 2, 3", waiting for 1 second between each number.
+	Special keys can be accompanied by a number, which will result in the key being pressed that many times in quick succession. An example is provided below:
 
-Pressing a hotkey results in a new thread being created to handle the macro, with a global maximum of 6 threads (including the main thread) and a maximum of 5 threads per hotkey. This means that if you press a hotkey multiple times, or multiple different hotkeys in quick succession, it will create a new thread for each subsequent press.
+		RCtrl:{Tab 4}
 
+	The above macro when triggered will result in the tab key being pressed 4 times.
 
-Macros can be nested and even call themselves, however a macro is only allowed a recursion depth of 5, this is to prevent infinite recursion from crashing the script during execution.
+	
+2. Settings
 
+	There are several customisable settings which allow the user to change some behaviour of the program. They are limited at the moment, however new settings can 		be added if requested through the github repo.
 
+	2.1 Max Recursion Depth
+	This is a numeric value which limits the depth to which a macro can nest itself. The default is 5 and values over a certain amount (~140) will cause the script 	to exit when triggered.
 
-Known issues
+	2.2 List Name
+	This is a string that contains the name of the file that macros will be loaded from. The default is macroList.txt
 
-Due to the use of braces to encapsulate special keys, they cannot be used as part of a key sequence
+3. Links
 
+	https://www.autohotkey.com/docs/commands/Send.htm#keynames - Contains a list of special keys and their names
+
+	https://www.autohotkey.com/docs/Hotkeys.htm#Symbols - Contains a list of symbols used to represent special keys
