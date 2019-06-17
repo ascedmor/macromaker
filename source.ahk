@@ -7,7 +7,7 @@ global maxRecDepth, listName
 
 loadSettings()
 global combinedArray := {}
-; Build macro list from file macroList.txt
+; Build macro list from file
 combinedArray := loadFile(listName)
 MsgBox % "Found " combinedArray.Count() " hotkey(s)"
 
@@ -38,14 +38,8 @@ performSequence(sequence, recDepth)
 	button := ""
 	construct := false
 	waitTime = 0
-	startTime = A_TickCount
 	Loop, parse, sequence
 	{
-		if (waitTime > 0)
-		{
-			Sleep, waitTime
-			waitTime = 0
-		}
 
 		if (A_LoopField == "{")								;begin constructing button name
 		{
@@ -72,6 +66,12 @@ performSequence(sequence, recDepth)
 			{
 				Send {%button%}
 				button := ""
+			}
+
+			if (waitTime > 0)
+			{
+				Sleep, waitTime
+				waitTime = 0
 			}
 		}
 		else if (construct)								;add letter to button name
@@ -125,6 +125,8 @@ performSequence(sequence, recDepth)
 			key := ""
 
 		}
+
+	
 
 		
 	}
