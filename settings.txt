@@ -1,7 +1,30 @@
 ;this file contains all the customisable settings, simply change the value to the right of the ":". Order doesnt matter, though it is important to have an entry for each setting
 
 ;the maximum depth to which a macro can call itself. Values too high will cause the script to crash
+;default = 5
 MaxRecursionDepth:5
 
 ;the name of the file you want to load your macros from
+;default = macroList.txt
 ListName:macroList.txt
+
+;the characters used to encapsulate special keys
+;default = {
+open:{
+;default = }
+close:}
+
+;the character used to encapsulate wait times
+;default = #
+waitChar:#
+
+;the multiplier used for wait times
+;default = 10
+waitMul:10
+
+;the name of the file to send error messages to
+logFile:log.txt
+
+;the verbosity of the log file
+;default = 0
+logLevel:0
