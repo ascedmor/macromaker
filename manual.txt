@@ -1,7 +1,7 @@
 1. Creating A Macro
 
 	1.1 Storage
-	By default Macros are stored in macroList.txt and are loaded into the programs memory during initialisation, meaning that a restart will need to be performed to load any changes.
+	By default Macros are stored in macroList.txt.
 	
 	You can easily change the name of the file to be loaded in settings.txt, allowing multiple separate macro lists to be kept handy i.e separate lists for different games/tasks
 
