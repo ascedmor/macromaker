@@ -1,9 +1,9 @@
 1. Creating A Macro
 
 	1.1 Storage
-	By default Macros are stored in macroList.txt and are loaded into the programs memory during initialisation, meaning that a restart will need to be performed 		to load any changes.
+	By default Macros are stored in macroList.txt and are loaded into the programs memory during initialisation, meaning that a restart will need to be performed to load any changes.
 	
-	You can easily change the name of the file to be loaded in settings.txt, allowing multiple separate macro lists to be kept handy i.e separate lists for 	different games/tasks
+	You can easily change the name of the file to be loaded in settings.txt, allowing multiple separate macro lists to be kept handy i.e separate lists for different games/tasks
 
 	1.2 Structure
 	A macro is made up of a hotkey and a key sequence, separated by a ':' (colon). An example is provided below:
@@ -33,7 +33,7 @@
 
 		>^q:print some text
 
-	This macro will be triggered when the right (>) control key (^) is pressed along with the q key. A list of symbols can be found at the link provided at the end 	of this document
+	This macro will be triggered when the right (>) control key (^) is pressed along with the q key. A list of symbols can be found at the link provided at the end of this document
 
 	Hotkeys can also be arbitrary names, that can then be included as part of another macros key sequence. An example is provided below:
 
@@ -51,13 +51,39 @@
 	
 2. Settings
 
-	There are several customisable settings which allow the user to change some behaviour of the program. They are limited at the moment, however new settings can 		be added if requested through the github repo.
+	There are several customisable settings which allow the user to change some behaviour of the program. They are limited at the moment, however new settings can 	be added if requested through the github repo.
 
 	2.1 Max Recursion Depth
-	This is a numeric value which limits the depth to which a macro can nest itself. The default is 5 and values over a certain amount (~140) will cause the script 	to exit when triggered.
+	This is a numeric value which limits the depth to which a macro can nest itself. The default is 5 and values over a certain amount (~140) will cause the script to exit when triggered.
 
 	2.2 List Name
 	This is a string that contains the name of the file that macros will be loaded from. The default is macroList.txt
+	
+	2.3 Special Key Encapsulation
+	2.3.1 Open
+	This is the character used to begin construction of a special key name
+	
+	2.3.2 Close
+	This is the character used to finish construction of a special key name
+
+	2.4 Wait Character
+	This is the character used to encapsulate a wait time value
+
+	2.5 Wait Multiplier
+	This value is used to multiple wait time values. A value of 10 means that a wait time value of 100 is equal to 1 second
+
+	2.6 Log File
+	This is the name of the file that log messages will be written to
+
+	2.7 Log Level
+	This is the level of verbosity you want your logs to have. Values are as follows:
+	
+		0 = Critical errors
+		1 = Non critical errors
+		2 = Thread information
+		3 = Loading information
+		4 = Sequence information
+		5 = Anything else
 
 3. Links
 
