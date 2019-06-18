@@ -1,20 +1,15 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, logLevel
+global combinedArray := {}
 logFile = log.txt
 logLevel = 0
 log("----Initialising----", 0, -1)
 #MaxThreads 20
 #MaxThreadsPerHotkey 5
-loadSettings()
-global combinedArray := {}
-; Build macro list from file
-log("Loading hotkeys from " listName, 0, 3)
-combinedArray := loadFile(listName)
-registerHotkeys(combinedArray)
-count := combinedArray.Count()
-Log("Found " count " hotkeys", 0, 3)
 
+loadSettings()
+loadHotkeys()
 
 
 ; enter main loop
@@ -23,6 +18,10 @@ Loop
 {
 
 }
+
+reloadHotkeys:
+	loadHotkeys()
+return
 
 ;Handle threaded hotkeys
 
@@ -156,21 +155,6 @@ loadFile(fileName)
 	return combinedArray
 }
 
-registerHotkeys(array)
-{
-	For key in array
-	{
-		try 
-		{ 
-			Hotkey, %key%, hotkeyTrigger 
-		} 
-		catch e 
-		{ 
-			logError(e) 
-		}
-	}
-}
-
 loadSettings()
 {
 	log("Loading settings", 0, 3)
@@ -187,12 +171,41 @@ loadSettings()
 	waitMul := ObjRawGet(settings, "waitMul")
 	logLevel := ObjRawGet(settings, "logLevel")
 
+	reload := ObjRawGet(settings, "reload")
+	Hotkey, %reload%, reloadHotkeys
+
 	if (specOpen = specClose)
 	{
 		log("Special open and special close keys cannot be identical", 1, 0)
 	}
 	log("Finished loading settings", 0, 3)
 	
+}
+
+loadHotkeys()
+{
+	; Build macro list from file
+	log("Loading hotkeys", 0, 3)
+	combinedArray := loadFile(listName)
+	registerHotkeys(combinedArray)
+	count := combinedArray.Count()
+	Log("Found " count " hotkeys", 0, 3)
+	
+}
+
+registerHotkeys(array)
+{
+	For key in array
+	{
+		try 
+		{ 
+			Hotkey, %key%, hotkeyTrigger 
+		} 
+		catch e 
+		{ 
+			logError(e) 
+		}
+	}
 }
 
 log(message, critical, level)
