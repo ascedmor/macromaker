@@ -84,6 +84,9 @@
 		3 = Loading information
 		4 = Sequence information
 		5 = Anything else
+	
+	2.8 Reload Hotkey
+	This is the hotkey used to reload macros from the macro list
 
 3. Links
 

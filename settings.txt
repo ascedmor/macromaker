@@ -22,9 +22,13 @@ waitChar:#
 ;default = 10
 waitMul:10
 
+;the hotkey used to reload your macro list
+;default = >^>+r (right control + right shift + r)
+reload:>^>+r
+
 ;the name of the file to send error messages to
 logFile:log.txt
 
 ;the verbosity of the log file
 ;default = 0
-logLevel:0
+logLevel:5
