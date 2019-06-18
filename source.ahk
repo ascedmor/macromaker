@@ -2,19 +2,22 @@
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul
 logFile = log.txt
-
+log("----Initialising----",0)
 #MaxThreads 20
 #MaxThreadsPerHotkey 5
 loadSettings()
 global combinedArray := {}
 ; Build macro list from file
+log("Loading hotkeys from " listName, 0)
 combinedArray := loadFile(listName)
+registerHotkeys(combinedArray)
 count := combinedArray.Count()
-Log("Found " %count% " hotkey", false)
+Log("Found " count " hotkeys", 0)
 
 
 
 ; enter main loop
+log("Entering main loop", 0)
 Loop
 {
 
@@ -23,17 +26,18 @@ Loop
 ;Handle threaded hotkeys
 
 hotkeyTrigger:
-	log("Starting new thread for macro bound to " %A_ThisHotkey%, 0)
+	log("Opening new thread for macro bound to " A_ThisHotkey, 0)
 	hotkey = %A_ThisHotkey%
 	macro := ObjRawGet(combinedArray, hotkey)
 	performSequence(macro, 0)
+	log("Closing thread", 0)
 return
 
 
 
 performSequence(sequence, recDepth)
 {
-	log("Beginning sequence " %sequence%, 0)
+	log("Beginning sequence " sequence, 0)
 	global maxRecDepth, combinedArray
 	send := true
 	button := ""
@@ -144,18 +148,25 @@ loadFile(fileName)
 			array := StrSplit(A_LoopReadLine, ":")			;split using : as delimiter
 			combinedArray[array[1]] := array[2]			;add array element with named key
 			keyName := array[1]
-			try 
-			{ 
-				Hotkey, %keyName%, hotkeyTrigger 
-			} 
-			catch e 
-			{ 
-				logError(e) 
-			}
 		}
 		
 	}
 	return combinedArray
+}
+
+registerHotkeys(array)
+{
+	For key in array
+	{
+		try 
+		{ 
+			Hotkey, %key%, hotkeyTrigger 
+		} 
+		catch e 
+		{ 
+			logError(e) 
+		}
+	}
 }
 
 loadSettings()
@@ -163,6 +174,7 @@ loadSettings()
 	log("Loading settings", 0)
 	global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul
 	OnError("logError")
+	OnExit("handleExit")
 	settings := loadFile("settings.txt")
 	maxRecDepth := ObjRawGet(settings, "MaxRecursionDepth")
 	listName := ObjRawGet(settings, "listName")
@@ -174,7 +186,6 @@ loadSettings()
 
 	if (specOpen = specClose)
 	{
-		MsgBox %specOpen% %specClose%
 		log("Special open and special close keys cannot be identical", 1)
 	}
 	log("Finished loading settings", 0)
@@ -183,8 +194,8 @@ loadSettings()
 
 log(message, critical)
 {
-	FormatTime, time, A_Now, d/M HH:mm:ss -
-	FileAppend, %time% %message% `n, %logFile%
+	FormatTime, time, A_Now, d/M HH:mm:ss
+	FileAppend, %time% - %message%`n, %logFile%
 	if (critical = 1)
 	{
 		MsgBox % "Critical error, check log for details"
@@ -196,4 +207,9 @@ logError(exception)
 {
 	log(exception.Message, 0)
 	return false
+}
+
+handleExit()
+{
+	log("----Exiting----",0)
 }
