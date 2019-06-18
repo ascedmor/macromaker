@@ -1,23 +1,24 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
-global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul
+global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, logLevel
 logFile = log.txt
-log("----Initialising----",0)
+logLevel = 0
+log("----Initialising----", 0, -1)
 #MaxThreads 20
 #MaxThreadsPerHotkey 5
 loadSettings()
 global combinedArray := {}
 ; Build macro list from file
-log("Loading hotkeys from " listName, 0)
+log("Loading hotkeys from " listName, 0, 3)
 combinedArray := loadFile(listName)
 registerHotkeys(combinedArray)
 count := combinedArray.Count()
-Log("Found " count " hotkeys", 0)
+Log("Found " count " hotkeys", 0, 3)
 
 
 
 ; enter main loop
-log("Entering main loop", 0)
+log("Entering main loop", 0, 2)
 Loop
 {
 
@@ -26,18 +27,18 @@ Loop
 ;Handle threaded hotkeys
 
 hotkeyTrigger:
-	log("Opening new thread for macro bound to " A_ThisHotkey, 0)
+	log("Opening new thread for macro bound to " A_ThisHotkey, 0, 2)
 	hotkey = %A_ThisHotkey%
 	macro := ObjRawGet(combinedArray, hotkey)
 	performSequence(macro, 0)
-	log("Closing thread", 0)
+	log("Closing thread", 0,2)
 return
 
 
 
 performSequence(sequence, recDepth)
 {
-	log("Beginning sequence " sequence, 0)
+	log("Beginning sequence " sequence, 0, 4)
 	global maxRecDepth, combinedArray
 	send := true
 	button := ""
@@ -138,6 +139,7 @@ performSequence(sequence, recDepth)
 
 loadFile(fileName)
 {
+	log("Loading from file " fileName, 0, 3)
 	combinedArray := {}
 	Loop, Read, %fileName%						;read file line by line
 	{
@@ -171,8 +173,8 @@ registerHotkeys(array)
 
 loadSettings()
 {
-	log("Loading settings", 0)
-	global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul
+	log("Loading settings", 0, 3)
+	global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, logLevel
 	OnError("logError")
 	OnExit("handleExit")
 	settings := loadFile("settings.txt")
@@ -183,19 +185,24 @@ loadSettings()
 	specClose := ObjRawGet(settings, "close")
 	waitChar := ObjRawGet(settings, "waitChar")
 	waitMul := ObjRawGet(settings, "waitMul")
+	logLevel := ObjRawGet(settings, "logLevel")
 
 	if (specOpen = specClose)
 	{
-		log("Special open and special close keys cannot be identical", 1)
+		log("Special open and special close keys cannot be identical", 1, 0)
 	}
-	log("Finished loading settings", 0)
+	log("Finished loading settings", 0, 3)
 	
 }
 
-log(message, critical)
+log(message, critical, level)
 {
+	global logLevel
 	FormatTime, time, A_Now, d/M HH:mm:ss
-	FileAppend, %time% - %message%`n, %logFile%
+	if (level <= logLevel)
+	{
+		FileAppend, %time% - %message%`n, %logFile%
+	}
 	if (critical = 1)
 	{
 		MsgBox % "Critical error, check log for details"
@@ -205,11 +212,11 @@ log(message, critical)
 
 logError(exception)
 {
-	log(exception.Message, 0)
+	log(exception.Message, 0, 1)
 	return false
 }
 
 handleExit()
 {
-	log("----Exiting----",0)
+	log("  ----Exiting----", 0, -1)
 }
