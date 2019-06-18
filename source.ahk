@@ -1,6 +1,7 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul
+logFile = log.txt
 
 #MaxThreads 20
 #MaxThreadsPerHotkey 5
@@ -8,7 +9,8 @@ loadSettings()
 global combinedArray := {}
 ; Build macro list from file
 combinedArray := loadFile(listName)
-MsgBox % "Found " combinedArray.Count() " hotkey(s)"
+count := combinedArray.Count()
+Log("Found " %count% " hotkey", false)
 
 
 
@@ -21,7 +23,7 @@ Loop
 ;Handle threaded hotkeys
 
 hotkeyTrigger:
-
+	log("Starting new thread for macro bound to " %A_ThisHotkey%, 0)
 	hotkey = %A_ThisHotkey%
 	macro := ObjRawGet(combinedArray, hotkey)
 	performSequence(macro, 0)
@@ -31,6 +33,7 @@ return
 
 performSequence(sequence, recDepth)
 {
+	log("Beginning sequence " %sequence%, 0)
 	global maxRecDepth, combinedArray
 	send := true
 	button := ""
@@ -157,10 +160,10 @@ loadFile(fileName)
 
 loadSettings()
 {
+	log("Loading settings", 0)
 	global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul
 	OnError("logError")
 	settings := loadFile("settings.txt")
-
 	maxRecDepth := ObjRawGet(settings, "MaxRecursionDepth")
 	listName := ObjRawGet(settings, "listName")
 	logFile := ObjRawGet(settings, "logFile")
@@ -171,8 +174,10 @@ loadSettings()
 
 	if (specOpen = specClose)
 	{
-		log(Special open and special close keys cannot be identical, true)
+		MsgBox %specOpen% %specClose%
+		log("Special open and special close keys cannot be identical", 1)
 	}
+	log("Finished loading settings", 0)
 	
 }
 
@@ -180,15 +185,15 @@ log(message, critical)
 {
 	FormatTime, time, A_Now, d/M HH:mm:ss -
 	FileAppend, %time% %message% `n, %logFile%
-	if (critical)
+	if (critical = 1)
 	{
+		MsgBox % "Critical error, check log for details"
 		Exit
 	}
 }
 
 logError(exception)
 {
-	FormatTime, time, A_Now, d/M HH:mm:ss -
-	FileAppend % time exception.Message "`n", %logFile%
-	return true
+	log(exception.Message, 0)
+	return false
 }
