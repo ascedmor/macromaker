@@ -1,6 +1,6 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
-global maxRecDepth, listName, logFile
+global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul
 
 #MaxThreads 20
 #MaxThreadsPerHotkey 5
@@ -38,7 +38,7 @@ performSequence(sequence, recDepth)
 	waitTime = 0
 	Loop, parse, sequence
 	{
-		if (A_LoopField == "{")								;begin constructing button name
+		if (A_LoopField == specOpen)								;begin constructing button name
 		{
 			if not (construct)
 			{
@@ -46,7 +46,7 @@ performSequence(sequence, recDepth)
 				button := ""
 			}
 		}
-		else if (A_LoopField == "}")							;stop constructing button name
+		else if (A_LoopField == specClose)							;stop constructing button name
 		{
 			construct := false
 			if (combinedArray.HasKey(button))						;perform nested macro
@@ -74,12 +74,12 @@ performSequence(sequence, recDepth)
 		else if (construct)								;add letter to button name
 		{
 			
-			if (A_LoopField = "#")
+			if (A_LoopField = waitChar)
 			{
 				if (readWait)
 				{
 					readWait := false
-					waitTime := wait * 10
+					waitTime := wait * waitMul
 				}
 				else
 				{
@@ -147,7 +147,7 @@ loadFile(fileName)
 			} 
 			catch e 
 			{ 
-				log(e) 
+				logError(e) 
 			}
 		}
 		
@@ -157,18 +157,38 @@ loadFile(fileName)
 
 loadSettings()
 {
-	global maxRecDepth, listName, logFile
-	OnError("log")
+	global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul
+	OnError("logError")
 	settings := loadFile("settings.txt")
 
 	maxRecDepth := ObjRawGet(settings, "MaxRecursionDepth")
 	listName := ObjRawGet(settings, "listName")
 	logFile := ObjRawGet(settings, "logFile")
+	specOpen := ObjRawGet(settings, "open")
+	specClose := ObjRawGet(settings, "close")
+	waitChar := ObjRawGet(settings, "waitChar")
+	waitMul := ObjRawGet(settings, "waitMul")
+
+	if (specOpen = specClose)
+	{
+		log(Special open and special close keys cannot be identical, true)
+	}
+	
 }
 
-log(message)
+log(message, critical)
 {
 	FormatTime, time, A_Now, d/M HH:mm:ss -
 	FileAppend, %time% %message% `n, %logFile%
+	if (critical)
+	{
+		Exit
+	}
+}
+
+logError(exception)
+{
+	FormatTime, time, A_Now, d/M HH:mm:ss -
+	FileAppend % time exception.Message "`n", %logFile%
 	return true
 }
