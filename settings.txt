@@ -31,4 +31,4 @@ logFile:log.txt
 
 ;the verbosity of the log file
 ;default = 0
-logLevel:5
+logLevel:0
