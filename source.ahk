@@ -5,6 +5,10 @@ global combinedArray := {}
 logFile = log.txt
 logLevel = 0
 log("----Initialising----", 0, -1)
+
+OnError("logError")
+OnExit("handleExit")
+
 #MaxThreads 20
 #MaxThreadsPerHotkey 5
 
@@ -159,8 +163,6 @@ loadSettings()
 {
 	log("Loading settings", 0, 3)
 	global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, logLevel
-	OnError("logError")
-	OnExit("handleExit")
 	settings := loadFile("settings.txt")
 	maxRecDepth := ObjRawGet(settings, "MaxRecursionDepth")
 	listName := ObjRawGet(settings, "listName")
@@ -184,28 +186,29 @@ loadSettings()
 
 loadHotkeys()
 {
-	; Build macro list from file
+	;Build macro list from file
 	log("Loading hotkeys", 0, 3)
 	combinedArray := loadFile(listName)
-	registerHotkeys(combinedArray)
+	For key in combinedArray
+	{
+		registerHotkey(key)
+	}
 	count := combinedArray.Count()
 	Log("Found " count " hotkeys", 0, 3)
 	
 }
 
-registerHotkeys(array)
+registerHotkey(key)
 {
-	For key in array
-	{
-		try 
-		{ 
-			Hotkey, %key%, hotkeyTrigger 
-		} 
-		catch e 
-		{ 
-			logError(e) 
-		}
+	try 
+	{ 
+		Hotkey, %key%, hotkeyTrigger 
+	} 
+	catch e 
+	{ 
+		logError(e) 
 	}
+
 }
 
 log(message, critical, level)
