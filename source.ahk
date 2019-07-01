@@ -1,6 +1,6 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
-global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, logLevel
+global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, mOpen, mClose, mSOpen, mSClose, separ, logLevel
 global combinedArray := {}
 logFile = log.txt
 logLevel = 0
@@ -162,18 +162,29 @@ loadFile(fileName)
 loadSettings()
 {
 	log("Loading settings", 0, 3)
-	global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, logLevel
-	settings := loadFile("settings.txt")
-	maxRecDepth := ObjRawGet(settings, "MaxRecursionDepth")
-	listName := ObjRawGet(settings, "listName")
-	logFile := ObjRawGet(settings, "logFile")
-	specOpen := ObjRawGet(settings, "open")
-	specClose := ObjRawGet(settings, "close")
-	waitChar := ObjRawGet(settings, "waitChar")
-	waitMul := ObjRawGet(settings, "waitMul")
-	logLevel := ObjRawGet(settings, "logLevel")
+	global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, mOpen, mClose, mSOpen, mSClose, separ, logLevel
 
-	reload := ObjRawGet(settings, "reload")
+	IniRead, maxRecDepth, settings.ini, Settings, MaxRecursionDepth
+	IniRead, listName, settings.ini, Settings, ListName
+	IniRead, waitMul, settings.ini, Settings, WaitMultiplier
+	IniRead, reload, settings.ini, Settings, ReloadHotkey
+
+	IniRead, logFile, settings.ini, Logging, LogFile
+	IniRead, logLevel, settings.ini, Logging, Verbosity
+
+	IniRead, waitChar, settings.ini, CharacterDefinitions, Wait
+	IniRead, specOpen, settings.ini, CharacterDefinitions, SpecialOpen
+	IniRead, specClose, settings.ini, CharacterDefinitions, SpecialClose
+	IniRead, mOpen, settings.ini, CharacterDefinitions, MouseOpen
+	IniRead, mClose, settings.ini, CharacterDefinitions, MouseClose
+	IniRead, mSOpen, settings.ini, CharacterDefinitions, MouseSpecialOpen
+	IniRead, mSClose, settings.ini, CharacterDefinitions, MouseSpecialClose
+	IniRead, separ, settings.ini, CharacterDefinitions, Separator
+
+	if not (reload)
+	{
+		reload := ">^>+r"
+	}
 	Hotkey, %reload%, reloadHotkeys
 
 	if (specOpen = specClose)
@@ -228,6 +239,7 @@ log(message, critical, level)
 
 logError(exception)
 {
+	MsgBox % exception.ErrorLevel
 	log(exception.Message, 0, 1)
 	return false
 }
