@@ -1,7 +1,7 @@
 1. Creating A Macro
 
 	1.1 Storage
-	By default Macros are stored in macroList.txt.
+	By default Macros are stored in macroList.txt and are loaded into the programs memory during initialisation, meaning that a restart will need to be performed to load any changes.
 	
 	You can easily change the name of the file to be loaded in settings.txt, allowing multiple separate macro lists to be kept handy i.e separate lists for different games/tasks
 
@@ -12,12 +12,14 @@
 
 	The above macro will perform the key sequence "print some text" when the right control key is pressed; this is the most basic form a macro can take.
 
+	1.2.1 Special Keys
 	Key sequences can also perform special key inputs by encapsulating the name of the special key in "{}" (braces). An example is provided below:
 
 		RCtrl:{Shift down} print some text {Shift up}
 
 	The above macro will begin holding the shift key before typing the text "print some text" and then finally release the shift key.
-
+	
+	1.2.2 Wait Times
 	Key sequences can also contain delays, encapsulated in hash's between braces, "{##}". An example is provided below:
 
 		RCtrl:{Shift down}{#500#}{Shift up}
@@ -27,8 +29,33 @@
 		RCtrl:{Shift down #500#}{Shift up}
 
 	Depending on your preference/use case.
+	
+	1.2.3 Mouse Movements
+	Sequences can also contain mouse coordinates, encapsulated within "<>"; these must appear within braces. An example is provided below:
 
-	1.2.1 Advanced Structure
+		RCtrl:{<0,5>}
+
+	The above macro will move the mouse to coordinates x=0, y=5.
+
+	Using normal brackets within mouse encapsulation allows the use of special keys and wait times. An example is provided below:
+
+		RCtrl:{<0,5(LButton #100#)>}
+
+	The above macro will move the mouse to 0,5 click the left mouse button and then wait 1 second
+
+	Mouse coordinates can also be made relative by prefixing them with a "+". An example is provided below:
+
+		RCtrl:{<+5,-5>}
+
+	The above macro will move the mouse 5 pixels along x and -5 along the y axis
+
+	Mouse coordinates can also include a speed value as a third parameter. Values can be from 0 to 100 with 0 being instant; the default value can be found in settings. An example is provided below:
+
+		RCtrl:{<5,5,100>}
+
+	The above macro will move the mouse cursor to 5,5 at the slowest possible speed.
+
+	1.2.4 Advanced Structure  
 	Macros can also be created using symbols to describe special keys, which allows the use of combinations for your hotkey. An example is provided below:
 
 		>^q:print some text
@@ -47,6 +74,18 @@
 		RCtrl:{Tab 4}
 
 	The above macro when triggered will result in the tab key being pressed 4 times.
+
+	Special keys can be separated using the Separator key ("|") to encapsulate multiple key presses in a single set of braces. An example is provided below:
+
+		RCtrl:{Space|Space}
+
+	The above macro when triggered will result in the space key being pressed twice
+
+	Special keys can also be separated by wait times to further decrease redundant syntax characters. An example is provided below:
+
+		RCtrl:{Space#100#Space}
+
+	The above macro when triggered will result in the space key being pressed twice with a delay of 100 units (1 second by default) between presses.
 
 	
 2. Settings
@@ -75,7 +114,7 @@
 	2.6 Log File
 	This is the name of the file that log messages will be written to
 
-	2.7 Log Level
+	2.7 Verbosity
 	This is the level of verbosity you want your logs to have. Values are as follows:
 	
 		0 = Critical errors
@@ -88,6 +127,35 @@
 	2.8 Reload Hotkey
 	This is the hotkey used to reload macros from the macro list
 
+	
+	2.9 MouseSpeed
+	This value will be used to determine the default speed for mouse movements, can be 0-100 with 0 being instant
+
+	2.10 Coordinate Mode
+	This value determines whether mouse movements are relative to the window or the screen. Possible values are:
+
+		Screen = Relative to the entire screen
+		Window = Relative to the active window
+		Client = Relative to the active windows client area
+
+	2.11 Mouse Encapsulation
+	2.11.1 Open
+	This is the character that is used to begin construction of a mouse coordinate
+
+	2.11.2 Close
+	This is the character that is used to finish construction of mouse coordinates
+
+	2.11.3 Special Open
+	This is the same as 2.3.1 but can be used within mouse encapsulation characters
+
+	2.11.4 Special Close
+	This is the same as 2.3.1 but can be used within mouse encapsulation characters
+
+	2.11.5 CoordinateSeparator
+	Used to separate parameters in a mouse coordinate.
+
+	2.12 Separator
+	Can be used within either mouse or special key encapsulation to simultaneously finish construction of a name and begin construction of another.
 3. Links
 
 	https://www.autohotkey.com/docs/commands/Send.htm#keynames - Contains a list of special keys and their names
