@@ -266,9 +266,7 @@ loadSettings()
 		else
 		{	
 			characterList = %value%,%characterList%
-			MsgBox %characterList%
 		}
-		MsgBox % name ": " value
 	}
 	IniRead, maxRecDepth, settings.ini, Settings, MaxRecursionDepth
 	IniRead, listName, settings.ini, Settings, ListName
