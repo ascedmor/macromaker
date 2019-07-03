@@ -47,8 +47,8 @@ performSequence(sequence, recDepth)
 	button := ""
 	x := ""
 	y := ""
-	relX := false
-	relY := false
+	relX = 0
+	relY = 0
 	construct := false
 	waitTime = 0
 	Loop, parse, sequence
@@ -82,8 +82,8 @@ performSequence(sequence, recDepth)
 				if (A_LoopField = separ)
 				{
 					moveMouse(x,y,relX,relY)
-					relX := false
-					relY := false
+					relX = 0
+					relY = 0
 					cConstruct := "x"
 					x := ""
 					Continue
@@ -102,7 +102,11 @@ performSequence(sequence, recDepth)
 					}
 					else if (A_LoopField = "+")
 					{
-						relX := true
+						relX = 1
+					}
+					else if (A_LoopField = "-")
+					{
+						relX = -1
 					}
 					else
 					{
@@ -113,9 +117,16 @@ performSequence(sequence, recDepth)
 				{
 					if (A_LoopField = "+")
 					{
-						relY := true
+						relY = 1
 					}
-					y = %y%%A_LoopField%
+					else if (A_LoopField = "-")
+					{
+						relY = -1
+					}
+					else
+					{
+						y = %y%%A_LoopField%
+					}
 				}
 			}
 			if (A_LoopField = waitChar)
@@ -186,13 +197,16 @@ performSequence(sequence, recDepth)
 moveMouse(x,y,relX,relY)
 {
 	MouseGetPos, posX, posY
-	if (relX)
+	if not (relX = 0)
 	{
+		x := x * relX
 		x := x + posX
 	}
-	if (relY)
+	if not (relY = 0)
 	{
+		y := y * relY
 		y := y + posY
+
 	}
 	MouseMove, x, y
 }
