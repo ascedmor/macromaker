@@ -1,4 +1,4 @@
-﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
+﻿SendMode Event  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, mOpen, mClose, mSOpen, mSClose, separ, coordSeparator, logLevel, mSpeed
 global combinedArray := {}
