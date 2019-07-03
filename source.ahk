@@ -244,7 +244,32 @@ loadSettings()
 {
 	log("Loading settings", 0, 3)
 	global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, mOpen, mClose, mSOpen, mSClose, separ, coordSeparator, logLevel
-
+	characterList := ""
+	defList := {}
+	defList["waitChar"] := "Wait"
+	defList["specOpen"] := "SpecialOpen"
+	defList["specClose"] := "SpecialClose"
+	defList["mOpen"] := "MouseOpen"
+	defList["mClose"] := "MouseClose"
+	defList["mSOpen"] := "MouseSpecialOpen"
+	defList["mSClose"] := "MouseSpecialClose"
+	defList["separ"] := "Separator"
+	defList["coordSeparator"] := "CoordinateSeparator"
+	for variable, name in defList
+	{
+		IniRead, value, settings.ini, CharacterDefinitions, %name%
+		%variable% := value
+		if value in %characterList%
+		{
+			log("Identical syntax value detected: " name, 1, 0)
+		}
+		else
+		{	
+			characterList = %value%,%characterList%
+			MsgBox %characterList%
+		}
+		MsgBox % name ": " value
+	}
 	IniRead, maxRecDepth, settings.ini, Settings, MaxRecursionDepth
 	IniRead, listName, settings.ini, Settings, ListName
 	IniRead, waitMul, settings.ini, Settings, WaitMultiplier
@@ -253,30 +278,21 @@ loadSettings()
 	IniRead, logFile, settings.ini, Logging, LogFile
 	IniRead, logLevel, settings.ini, Logging, Verbosity
 
-	IniRead, waitChar, settings.ini, CharacterDefinitions, Wait
-	IniRead, specOpen, settings.ini, CharacterDefinitions, SpecialOpen
-	IniRead, specClose, settings.ini, CharacterDefinitions, SpecialClose
-	IniRead, mOpen, settings.ini, CharacterDefinitions, MouseOpen
-	IniRead, mClose, settings.ini, CharacterDefinitions, MouseClose
-	IniRead, mSOpen, settings.ini, CharacterDefinitions, MouseSpecialOpen
-	IniRead, mSClose, settings.ini, CharacterDefinitions, MouseSpecialClose
-	IniRead, separ, settings.ini, CharacterDefinitions, Separator
-	IniRead, coordSeparator, settings.ini, CharacterDefinitions, CoordinateSeparator
-
 	if not (reload)
 	{
 		reload := ">^>+r"
 	}
 	Hotkey, %reload%, reloadHotkeys
 
-	if (specOpen = specClose)
-	{
-		log("Special open and special close keys cannot be identical", 1, 0)
-	}
 	log("Finished loading settings", 0, 3)
 	
 }
-
+loadValue(file,section,name)
+{
+	IniRead, value, file, section, name
+	return value
+		
+}
 loadHotkeys()
 {
 	;Build macro list from file
