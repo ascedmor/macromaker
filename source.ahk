@@ -79,6 +79,10 @@ performSequence(sequence, recDepth)
 				{
 					readWait := false
 					waitTime := wait * waitMul
+					sendButton(button, recDepth, waitTime)
+					waitTime = 0
+					button := "" 
+					Continue 
 				}
 				else
 				{
