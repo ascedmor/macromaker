@@ -217,7 +217,6 @@ moveMouse(x,y,relX,relY,speed)
 		y := y + posY
 
 	}
-	MsgBox %speed%
 	MouseMove, x, y, speed
 }
 sendButton(button, recDepth, waitTime)
@@ -300,6 +299,9 @@ loadSettings()
 
 	IniRead, logFile, settings.ini, Logging, LogFile
 	IniRead, logLevel, settings.ini, Logging, Verbosity
+
+	IniRead, cMode, settings.ini, Settings, CoordinateMode
+	CoordMode, Mouse, %cMode%
 
 	if not (reload)
 	{
