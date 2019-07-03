@@ -57,30 +57,18 @@ performSequence(sequence, recDepth)
 				button := ""
 			}
 		}
+		else if (A_LoopField == separ)
+		{
+			recDepth := sendButton(button, recDepth, waitTime)
+			waitTime = 0
+			button := ""
+			Continue
+		}
 		else if (A_LoopField == specClose)							;stop constructing button name
 		{
 			construct := false
-			if (combinedArray.HasKey(button))						;perform nested macro
-			{
-				if (recDepth < maxRecDepth)
-				{
-					recDepth += 1
-					nestedSequence := ObjRawGet(combinedArray, button)
-					performSequence(nestedSequence, recDepth)
-				}
-				button := ""
-			}
-			else										;send as button
-			{
-				Send {%button%}
-				button := ""
-			}
-
-			if (waitTime > 0)
-			{
-				Sleep, waitTime
-				waitTime = 0
-			}
+			recDepth:= sendButton(button, recDepth, waitTime)
+			waitTime = 0
 		}
 		else if (construct)								;add letter to button name
 		{
@@ -140,6 +128,31 @@ performSequence(sequence, recDepth)
 	}
 }
 
+sendButton(button, recDepth, waitTime)
+{
+	global combinedArray, maxRecDepth
+	if (combinedArray.HasKey(button))						;perform nested macro
+	{
+		if (recDepth < maxRecDepth)
+		{
+			recDepth += 1
+			nestedSequence := ObjRawGet(combinedArray, button)
+			performSequence(nestedSequence, recDepth)
+		}
+		button := ""
+	}
+	else										;send as button
+	{
+		Send {%button%}
+		button := ""
+	}
+	if (waitTime > 0)
+	{
+		Sleep, waitTime
+		waitTime = 0
+	}
+	return recDepth, waitTime
+}
 loadFile(fileName)
 {
 	log("Loading from file " fileName, 0, 3)
@@ -213,7 +226,7 @@ registerHotkey(key)
 {
 	try 
 	{ 
-		Hotkey, %key%, hotkeyTrigger 
+		Hotkey, %key%, hotkeyTrigger
 	} 
 	catch e 
 	{ 
@@ -239,7 +252,6 @@ log(message, critical, level)
 
 logError(exception)
 {
-	MsgBox % exception.ErrorLevel
 	log(exception.Message, 0, 1)
 	return false
 }
