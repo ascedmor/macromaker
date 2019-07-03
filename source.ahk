@@ -79,7 +79,6 @@ performSequence(sequence, recDepth)
 
 				if (A_LoopField = separ)
 				{
-					MsgBox % "Moving mouse to " x ", " y
 					MouseMove, x, y
 					cConstruct := "x"
 					x := ""
@@ -87,7 +86,6 @@ performSequence(sequence, recDepth)
 				}
 				else if (A_LoopField = mSOpen or A_LoopField = mClose)
 				{
-					MsgBox % "Moving mouse to " x ", " y
 					MouseMove, x, y
 					constructMouse := false
 				}
@@ -97,9 +95,11 @@ performSequence(sequence, recDepth)
 					{
 						cConstruct := "y"
 						y := ""
-						Continue
 					}
-					x = %x%%A_LoopField%
+					else
+					{
+						x = %x%%A_LoopField%
+					}
 				}
 				else if (cConstruct = "y")
 				{
