@@ -47,6 +47,8 @@ performSequence(sequence, recDepth)
 	button := ""
 	x := ""
 	y := ""
+	relX := false
+	relY := false
 	construct := false
 	waitTime = 0
 	Loop, parse, sequence
@@ -79,14 +81,14 @@ performSequence(sequence, recDepth)
 
 				if (A_LoopField = separ)
 				{
-					MouseMove, x, y
+					moveMouse(x,y,relX,relY)
 					cConstruct := "x"
 					x := ""
 					Continue
 				}
 				else if (A_LoopField = mSOpen or A_LoopField = mClose)
 				{
-					MouseMove, x, y
+					moveMouse(x,y,relX,relY)
 					constructMouse := false
 				}
 				if (cConstruct = "x")
@@ -96,6 +98,10 @@ performSequence(sequence, recDepth)
 						cConstruct := "y"
 						y := ""
 					}
+					else if (A_LoopField = "+")
+					{
+						relX := true
+					}
 					else
 					{
 						x = %x%%A_LoopField%
@@ -103,6 +109,10 @@ performSequence(sequence, recDepth)
 				}
 				else if (cConstruct = "y")
 				{
+					if (A_LoopField = "+")
+					{
+						relY := true
+					}
 					y = %y%%A_LoopField%
 				}
 			}
@@ -169,9 +179,18 @@ performSequence(sequence, recDepth)
 		
 	}
 }
-sendMouse()
+moveMouse(x,y,relX,relY)
 {
-	
+	MouseGetPos, posX, posY
+	if (relX)
+	{
+		x := x + posX
+	}
+	if (relY)
+	{
+		y := y + posY
+	}
+	MouseMove, x, y
 }
 sendButton(button, recDepth, waitTime)
 {
