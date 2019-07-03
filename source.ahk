@@ -1,6 +1,6 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
-global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, mOpen, mClose, mSOpen, mSClose, separ, coordSeparator, logLevel
+global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, mOpen, mClose, mSOpen, mSClose, separ, coordSeparator, logLevel, mSpeed
 global combinedArray := {}
 logFile = log.txt
 logLevel = 0
@@ -81,19 +81,18 @@ performSequence(sequence, recDepth)
 
 				if (A_LoopField = separ)
 				{
-					moveMouse(x,y,relX,relY)
+					moveMouse(x,y,relX,relY,speed)
 					relX = 0
 					relY = 0
 					cConstruct := "x"
 					x := ""
-					Continue
 				}
 				else if (A_LoopField = mSOpen or A_LoopField = mClose)
 				{
-					moveMouse(x,y,relX,relY)
+					moveMouse(x,y,relX,relY,speed)
 					constructMouse := false
 				}
-				if (cConstruct = "x")
+				else if (cConstruct = "x")
 				{
 					if (A_LoopField = coordSeparator)
 					{
@@ -115,7 +114,12 @@ performSequence(sequence, recDepth)
 				}
 				else if (cConstruct = "y")
 				{
-					if (A_LoopField = "+")
+					if (A_LoopField = coordSeparator)
+					{
+						cConstruct := "s"
+						speed := ""
+					}
+					else if (A_LoopField = "+")
 					{
 						relY = 1
 					}
@@ -127,6 +131,10 @@ performSequence(sequence, recDepth)
 					{
 						y = %y%%A_LoopField%
 					}
+				}
+				else if (cConstruct = "s")
+				{
+					speed = %speed%%A_LoopField%
 				}
 			}
 			if (A_LoopField = waitChar)
@@ -156,6 +164,7 @@ performSequence(sequence, recDepth)
 				cConstruct := "x"
 				relX := false
 				relY := false
+				speed = mSpeed
 			}
 			else
 			{
@@ -194,7 +203,7 @@ performSequence(sequence, recDepth)
 		
 	}
 }
-moveMouse(x,y,relX,relY)
+moveMouse(x,y,relX,relY,speed)
 {
 	MouseGetPos, posX, posY
 	if not (relX = 0)
@@ -208,7 +217,8 @@ moveMouse(x,y,relX,relY)
 		y := y + posY
 
 	}
-	MouseMove, x, y
+	MsgBox %speed%
+	MouseMove, x, y, speed
 }
 sendButton(button, recDepth, waitTime)
 {
@@ -257,7 +267,7 @@ loadFile(fileName)
 loadSettings()
 {
 	log("Loading settings", 0, 3)
-	global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, mOpen, mClose, mSOpen, mSClose, separ, coordSeparator, logLevel
+	global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, mOpen, mClose, mSOpen, mSClose, separ, coordSeparator, logLevel, mSpeed
 	characterList := ""
 	defList := {}
 	defList["waitChar"] := "Wait"
@@ -282,6 +292,7 @@ loadSettings()
 			characterList = %value%,%characterList%
 		}
 	}
+	IniRead, mSpeed, settings.ini, Settings, MouseSpeed
 	IniRead, maxRecDepth, settings.ini, Settings, MaxRecursionDepth
 	IniRead, listName, settings.ini, Settings, ListName
 	IniRead, waitMul, settings.ini, Settings, WaitMultiplier
