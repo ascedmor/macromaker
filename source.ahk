@@ -82,6 +82,8 @@ performSequence(sequence, recDepth)
 				if (A_LoopField = separ)
 				{
 					moveMouse(x,y,relX,relY)
+					relX := false
+					relY := false
 					cConstruct := "x"
 					x := ""
 					Continue
@@ -141,6 +143,8 @@ performSequence(sequence, recDepth)
 			{
 				constructMouse := true
 				cConstruct := "x"
+				relX := false
+				relY := false
 			}
 			else
 			{
