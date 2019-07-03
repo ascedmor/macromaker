@@ -1,6 +1,6 @@
 ﻿SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
-global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, mOpen, mClose, mSOpen, mSClose, separ, logLevel
+global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, mOpen, mClose, mSOpen, mSClose, separ, coordSeparator, logLevel
 global combinedArray := {}
 logFile = log.txt
 logLevel = 0
@@ -45,6 +45,8 @@ performSequence(sequence, recDepth)
 	global maxRecDepth, combinedArray
 	send := true
 	button := ""
+	x := ""
+	y := ""
 	construct := false
 	waitTime = 0
 	Loop, parse, sequence
@@ -72,7 +74,38 @@ performSequence(sequence, recDepth)
 		}
 		else if (construct)								;add letter to button name
 		{
-			
+			if (constructMouse)
+			{
+
+				if (A_LoopField = separ)
+				{
+					MsgBox % "Moving mouse to " x ", " y
+					MouseMove, x, y
+					cConstruct := "x"
+					x := ""
+					Continue
+				}
+				else if (A_LoopField = mSOpen or A_LoopField = mClose)
+				{
+					MsgBox % "Moving mouse to " x ", " y
+					MouseMove, x, y
+					constructMouse := false
+				}
+				if (cConstruct = "x")
+				{
+					if (A_LoopField = coordSeparator)
+					{
+						cConstruct := "y"
+						y := ""
+						Continue
+					}
+					x = %x%%A_LoopField%
+				}
+				else if (cConstruct = "y")
+				{
+					y = %y%%A_LoopField%
+				}
+			}
 			if (A_LoopField = waitChar)
 			{
 				if (readWait)
@@ -93,6 +126,11 @@ performSequence(sequence, recDepth)
 			else if (readWait)
 			{
 				wait = %wait%%A_LoopField%
+			}
+			else if (A_LoopField = mOpen or A_LoopField = mSClose)
+			{
+				constructMouse := true
+				cConstruct := "x"
 			}
 			else
 			{
@@ -131,7 +169,10 @@ performSequence(sequence, recDepth)
 		
 	}
 }
-
+sendMouse()
+{
+	
+}
 sendButton(button, recDepth, waitTime)
 {
 	global combinedArray, maxRecDepth
@@ -179,7 +220,7 @@ loadFile(fileName)
 loadSettings()
 {
 	log("Loading settings", 0, 3)
-	global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, mOpen, mClose, mSOpen, mSClose, separ, logLevel
+	global maxRecDepth, listName, logFile, specOpen, specClose, waitChar, waitMul, mOpen, mClose, mSOpen, mSClose, separ, coordSeparator, logLevel
 
 	IniRead, maxRecDepth, settings.ini, Settings, MaxRecursionDepth
 	IniRead, listName, settings.ini, Settings, ListName
@@ -197,6 +238,7 @@ loadSettings()
 	IniRead, mSOpen, settings.ini, CharacterDefinitions, MouseSpecialOpen
 	IniRead, mSClose, settings.ini, CharacterDefinitions, MouseSpecialClose
 	IniRead, separ, settings.ini, CharacterDefinitions, Separator
+	IniRead, coordSeparator, settings.ini, CharacterDefinitions, CoordinateSeparator
 
 	if not (reload)
 	{
