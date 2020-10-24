@@ -1,2 +1,3 @@
-RCtrl:{Enter}
-LCtrl:This is another test
+Test:This is a test
+RCtrl:{Test}
+LShift:{Enter}
